@@ -1,0 +1,50 @@
+name: Deploy Application
+
+on:
+  push:
+    branches: "main"
+
+jobs:
+  
+  Deploy:
+    
+    defaults:
+      run:
+        working-directory: ./terraform
+    runs-on: ubuntu-latest
+
+    env:
+      TF_VAR_profile: "ompatel"
+      TF_VAR_region: "ca-central-1"
+      TF_VAR_account_id: ${{secrets.AWS_ACCOUNT_ID}}
+      
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: install Terraform
+        run: |
+          wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+          sudo apt update && sudo apt install terraform
+
+      - name: credentials on cli
+        # run: bash '../.github/'.github/workflows/commands.sh
+        run: bash commands.sh
+        env:
+          AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+          AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+          AWS_REGION: "ca-central-1"
+          AWS_PROFILE: "ompatel"
+
+      - name: initialize terraform
+        run: terraform init
+
+      - name: plan terraform
+        run: "terraform plan"
+
+      - name: Apply resources
+        run: terraform apply -auto-approve
