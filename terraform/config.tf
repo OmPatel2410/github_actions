@@ -10,7 +10,7 @@ terraform {
 terraform {
   backend "s3" {
     bucket         = "om1mybucket"
-    profile        = "Om_patel"
+    profile        = "ompatel"
     encrypt        = "true"
     dynamodb_table = "mytable"
     key            = "log/terraform.tfstate"
@@ -21,7 +21,7 @@ terraform {
 # Configure the AWS Provider
 provider "aws" {
   region  = "ca-central-1"
-  profile = "Om_patel"
+  profile = "ompatel"
 }
 
 
